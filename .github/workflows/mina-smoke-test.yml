@@ -32,4 +32,4 @@ jobs:
           $liveSha = (Get-FileHash $livePath -Algorithm SHA256).Hash
           $originSha = (Get-FileHash $originPath -Algorithm SHA256).Hash
           if ($liveSha -ne $originSha) { throw 'Vercel /win content differs from published dist artifact.' }
-          Write-Host "Verified $liveUrl: compiled PowerShell matches GitHub dist (SHA256 $liveSha)"
+          Write-Host "Verified $($liveUrl): compiled PowerShell matches GitHub dist (SHA256 $liveSha)"
