@@ -1,0 +1,35 @@
+name: Verify Mina WinUtil public endpoint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/mina-smoke-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: windows-latest
+    steps:
+      - name: Compare public domain with published dist artifact (never execute)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $liveUrl = 'https://minaromany.online/win'
+          $originUrl = 'https://raw.githubusercontent.com/MinaRomanyBoles/minawinutil/dist/winutil.ps1'
+          $livePath = Join-Path $env:RUNNER_TEMP 'domain-winutil.ps1'
+          $originPath = Join-Path $env:RUNNER_TEMP 'dist-winutil.ps1'
+          Invoke-WebRequest -Uri $liveUrl -TimeoutSec 90 -OutFile $livePath
+          Invoke-WebRequest -Uri $originUrl -TimeoutSec 90 -OutFile $originPath
+          $liveContent = Get-Content -LiteralPath $livePath -Raw
+          if (-not $liveContent.StartsWith('<#')) { throw 'Public URL did not serve PowerShell source.' }
+          if ($liveContent -notmatch 'MIT License') { throw 'Compiled file is missing license notice.' }
+          if ($liveContent -notmatch 'Mina WinUtil') { throw 'Compiled file is missing fork branding.' }
+          if ((Get-Item $livePath).Length -lt 100000) { throw 'Public script is unexpectedly short.' }
+          $liveSha = (Get-FileHash $livePath -Algorithm SHA256).Hash
+          $originSha = (Get-FileHash $originPath -Algorithm SHA256).Hash
+          if ($liveSha -ne $originSha) { throw 'Vercel /win content differs from published dist artifact.' }
+          Write-Host "Verified $liveUrl: compiled PowerShell matches GitHub dist (SHA256 $liveSha)"
