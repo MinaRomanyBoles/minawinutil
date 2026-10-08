@@ -6,12 +6,16 @@ on:
     paths:
       - '.github/workflows/mina-smoke-test.yml'
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Build & Publish Mina WinUtil']
+    types: [completed]
 
 permissions:
   contents: read
 
 jobs:
   smoke-test:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
     runs-on: windows-latest
     steps:
       - name: Compare public domain with published dist artifact (never execute)
@@ -28,6 +32,9 @@ jobs:
           if (-not $liveContent.StartsWith('<#')) { throw 'Public URL did not serve PowerShell source.' }
           if ($liveContent -notmatch 'MIT License') { throw 'Compiled file is missing license notice.' }
           if ($liveContent -notmatch 'Mina WinUtil') { throw 'Compiled file is missing fork branding.' }
+          if ($liveContent -notmatch 'minaromanyofficial@gmail.com') { throw 'Developer contact details are missing.' }
+          if ($liveContent -notmatch 'function New-MinaProfileCard') { throw 'Developer UI card function is missing.' }
+          if ($liveContent -notmatch '\$sync\.preferences\.MinaBrandPngBase64 = ''[A-Za-z0-9+/]{1000,}={0,2}''') { throw 'The embedded Mina portrait is missing or corrupt.' }
           if ((Get-Item $livePath).Length -lt 100000) { throw 'Public script is unexpectedly short.' }
           $liveSha = (Get-FileHash $livePath -Algorithm SHA256).Hash
           $originSha = (Get-FileHash $originPath -Algorithm SHA256).Hash
