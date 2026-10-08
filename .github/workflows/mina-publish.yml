@@ -1,0 +1,77 @@
+name: Build & Publish Mina WinUtil
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'functions/**'
+      - 'config/**'
+      - 'xaml/**'
+      - 'tools/autounattend.xml'
+      - 'Compile.ps1'
+      - 'LICENSE'
+      - '.github/workflows/mina-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Check out Mina WinUtil sources
+        uses: actions/checkout@v4
+
+      - name: Compile and validate PowerShell syntax
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./Compile.ps1
+          $tokens = $null
+          $parseErrors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path './winutil.ps1').Path, [ref]$tokens, [ref]$parseErrors)
+          if ($parseErrors.Count -gt 0) {
+            $parseErrors | ForEach-Object { Write-Error $_.Message }
+            throw 'Compiled WinUtil contains PowerShell syntax errors.'
+          }
+
+      - name: Package compiled script with MIT license
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Path publish -ItemType Directory -Force | Out-Null
+          $license = Get-Content LICENSE -Raw
+          $compiled = Get-Content winutil.ps1 -Raw
+          $header = "<#`n$license`n#>`n"
+          [IO.File]::WriteAllText((Join-Path $PWD 'publish/winutil.ps1'), ($header + $compiled), [Text.UTF8Encoding]::new($false))
+          Copy-Item LICENSE publish/LICENSE
+          if ((Get-Item publish/winutil.ps1).Length -lt 100000) { throw 'Unexpectedly small compiled artifact.' }
+
+      - name: Upload compiled artifact for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: mina-winutil-build
+          path: |
+            publish/winutil.ps1
+            publish/LICENSE
+
+      - name: Publish latest approved build to dist branch
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git -C publish init -b dist
+          git -C publish config user.name 'github-actions[bot]'
+          git -C publish config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C publish add winutil.ps1 LICENSE
+          git -C publish commit -m "Build from $env:GITHUB_SHA"
+          if ($LASTEXITCODE -ne 0) { throw 'Could not commit distributable.' }
+          git -C publish remote add origin "https://x-access-token:$env:GH_TOKEN@github.com/$env:GITHUB_REPOSITORY.git"
+          git -C publish push --force origin HEAD:dist
+          if ($LASTEXITCODE -ne 0) { throw 'Could not publish dist branch.' }
