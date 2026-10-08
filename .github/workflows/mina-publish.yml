@@ -12,6 +12,7 @@ on:
       - 'xaml/**'
       - 'tools/autounattend.xml'
       - 'Compile.ps1'
+      - 'tools/mina-brand/render.cjs'
       - 'LICENSE'
       - '.github/workflows/mina-publish.yml'
   workflow_dispatch:
@@ -26,10 +27,20 @@ jobs:
       - name: Check out Mina WinUtil sources
         uses: actions/checkout@v4
 
+      - name: Render supplied Mina SVG to a WPF-compatible PNG
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          npm install --prefix tools/mina-brand --no-save --no-audit --no-fund sharp@0.34.4
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to install SVG conversion dependency.' }
+          node tools/mina-brand/render.cjs
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to render Mina SVG asset.' }
+
       - name: Compile and validate PowerShell syntax
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $env:MINA_BRANDING_REQUIRED = 'true'
           ./Compile.ps1
           $tokens = $null
           $parseErrors = $null
