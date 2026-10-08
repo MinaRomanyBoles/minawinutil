@@ -76,7 +76,7 @@
     "WPFInstallFOSSInfo": {
         "Content": "Mina Romany - Developer",
         "Category": "__Selection",
-        "Type": "MinaProfile",
+        "Type": "Note",
         "Order": "0",
         "Description": "Developer profile and social links"
     }
