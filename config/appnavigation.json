@@ -74,10 +74,10 @@
         "Description": "Show the selected applications"
     },
     "WPFInstallFOSSInfo": {
-        "Content": "Free and Open Source Software",
+        "Content": "Mina Romany - Developer",
         "Category": "__Selection",
-        "Type": "Note",
+        "Type": "MinaProfile",
         "Order": "0",
-        "Description": "Information about the #FOSS label on application entries"
+        "Description": "Developer profile and social links"
     }
 }
