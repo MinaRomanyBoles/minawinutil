@@ -49,6 +49,15 @@ if (Test-Path -LiteralPath $minaProfilePath) {
     throw "Mina profile PNG is required for published builds; run tools/mina-brand/render.cjs first."
 }
 
+# The developer-card portrait is separate from the SVG-derived application icon.
+$minaPortraitPath = Join-Path $PSScriptRoot "tools/mina-brand/mina-portrait.png"
+if (Test-Path -LiteralPath $minaPortraitPath) {
+    $minaPortraitBase64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($minaPortraitPath))
+    $script += "`$sync.preferences.MinaPortraitPngBase64 = '$minaPortraitBase64'`r`n"
+} elseif ($env:MINA_BRANDING_REQUIRED -eq 'true') {
+    throw "Mina developer portrait PNG is required for published builds; run tools/mina-brand/render.cjs first."
+}
+
 $script += Get-Content -Path scripts\main.ps1 -Raw
 
 Set-Content -Path winutil.ps1 -Value $script
