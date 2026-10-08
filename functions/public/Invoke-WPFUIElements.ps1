@@ -481,6 +481,11 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name] = $radioButton
                     }
 
+                    "MinaProfile" {
+                        $profileCard = New-MinaProfileCard
+                        [void]$stackPanelContainer.Children.Add($profileCard)
+                    }
+
                     "Note" {
                         $textBlock = New-Object Windows.Controls.TextBlock
                         $textBlock.TextWrapping = "Wrap"
