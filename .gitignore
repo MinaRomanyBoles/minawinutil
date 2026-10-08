@@ -16,3 +16,7 @@ __pycache__/
 
 .vscode/
 .idea/
+
+# Generated Mina branding files (rendered from minaromany.online/mina.svg)
+tools/mina-brand/node_modules/
+tools/mina-brand/mina-profile.png
