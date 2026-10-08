@@ -1,3 +1,5 @@
+> **Mina WinUtil fork** — This repository is a customized fork of [Chris Titus Tech WinUtil](https://github.com/ChrisTitusTech/winutil). Its planned public command is `irm https://minaromany.online/win | iex` (available only after the build + Vercel route have been deployed). See [MINA_DEPLOYMENT.md](MINA_DEPLOYMENT.md) for release and safety instructions. Upstream's commands below continue to load upstream, not this fork.
+
 # Chris Titus Tech's Windows Utility
 
 [![Version](https://img.shields.io/github/v/release/ChrisTitusTech/winutil?color=%230567ff&label=Latest%20Release&style=for-the-badge)](https://github.com/ChrisTitusTech/winutil/releases/latest)
