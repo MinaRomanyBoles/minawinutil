@@ -9,7 +9,9 @@ $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $imagePath = Join-Path $root 'tools/mina-brand/mina-profile.png'
 if (-not (Test-Path $imagePath)) { throw 'Rendered developer image is missing' }
 $sync = [Hashtable]::Synchronized(@{})
-$sync.MinaBrandPngBase64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($imagePath))
+$sync.preferences = @{}
+$sync.RenderedAssetCache = [Hashtable]::Synchronized(@{})
+$sync.preferences.MinaBrandPngBase64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($imagePath))
 
 . (Join-Path $root 'functions/private/Get-MinaBrandBitmap.ps1')
 . (Join-Path $root 'functions/private/New-MinaProfileCard.ps1')
