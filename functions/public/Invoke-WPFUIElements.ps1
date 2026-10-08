@@ -481,12 +481,12 @@ function Invoke-WPFUIElements {
                         $sync[$entryInfo.Name] = $radioButton
                     }
 
-                    "MinaProfile" {
-                        $profileCard = New-MinaProfileCard
-                        [void]$stackPanelContainer.Children.Add($profileCard)
-                    }
-
                     "Note" {
+                        if ($entryInfo.Name -eq 'WPFInstallFOSSInfo') {
+                            # Preserve the upstream config Note type while rendering Mina's profile.
+                            [void]$stackPanelContainer.Children.Add((New-MinaProfileCard))
+                            continue
+                        }
                         $textBlock = New-Object Windows.Controls.TextBlock
                         $textBlock.TextWrapping = "Wrap"
                         $textBlock.Margin = "5,5,5,5"
