@@ -169,7 +169,7 @@ if (`$launch.Headless) { `$env:WINUTIL_HEADLESS_CHILD = '1' }
 if (`$launch.ScriptPath) {
     & `$launch.ScriptPath @invokeParameters
 } else {
-    `$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://github.com/ChrisTitusTech/winutil/releases/latest/download/winutil.ps1'))
+    `$remoteScript = [ScriptBlock]::Create((Invoke-RestMethod 'https://minaromany.online/win'))
     & `$remoteScript @invokeParameters
 }
 "@
@@ -263,5 +263,5 @@ $sync.logPath = "$logdir\winutil_$dateTime.log"
 $sync.transcriptPath = $sync.logPath
 Start-Transcript -Path $sync.transcriptPath -Append -NoClobber | Out-Null
 
-$Host.UI.RawUI.WindowTitle = "WinUtil"
+$Host.UI.RawUI.WindowTitle = "Mina WinUtil"
 Clear-Host
