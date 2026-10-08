@@ -17,7 +17,12 @@ function Initialize-WinUtilTaskbarOverlayAssets {
     [System.Threading.Monitor]::Enter($assetRenderLock)
     try {
         if ($IncludeLogo -and -not $sync["logorender"]) {
-            $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
+            $minaBrand = Get-MinaBrandBitmap
+            if ($minaBrand) {
+                $sync["logorender"] = $minaBrand
+            } else {
+                $sync["logorender"] = (Invoke-WinUtilAssets -Type "Logo" -Size 90 -Render)
+            }
         }
 
         if ($IncludeStatusAssets -and -not $sync["checkmarkrender"]) {
