@@ -482,6 +482,10 @@ function Invoke-WPFUIElements {
                     }
 
                     "Note" {
+                        if ($entryInfo.Name -eq 'WPFInstallFOSSInfo') {
+                            # Preserve the upstream config Note type while rendering Mina's profile.
+                            [void]$stackPanelContainer.Children.Add((New-MinaProfileCard))
+                        } else {
                         $textBlock = New-Object Windows.Controls.TextBlock
                         $textBlock.TextWrapping = "Wrap"
                         $textBlock.Margin = "5,5,5,5"
@@ -499,6 +503,7 @@ function Invoke-WPFUIElements {
                         $textBlock.Inlines.Add($textRun)
 
                         $stackPanelContainer.Children.Add($textBlock) | Out-Null
+                        }
                     }
 
                     default {

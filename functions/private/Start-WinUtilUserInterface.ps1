@@ -377,9 +377,28 @@ function Start-WinUtilUserInterface {
         $sync["Form"].MaxHeight = [Double]::PositiveInfinity
     })
 
-    Measure-WinUtilStep -Scope "UI" -Name "build nav logo" -ScriptBlock {
-        $NavLogoPanel = $sync["Form"].FindName("NavLogoPanel")
-        $NavLogoPanel.Children.Add((Invoke-WinUtilAssets -Type "logo" -Size 25)) | Out-Null
+    Measure-WinUtilStep -Scope "UI" -Name "build Mina brand logo" -ScriptBlock {
+        $navLogoPanel = $sync["Form"].FindName("NavLogoPanel")
+        $brandImage = Get-MinaBrandBitmap
+        if ($brandImage) {
+            # ImageSource is a rasterized copy of the supplied mina.svg, embedded in the script.
+            $brandLogo = [Windows.Controls.Image]::new()
+            $brandLogo.Source = $brandImage
+            $brandLogo.Width = 30
+            $brandLogo.Height = 30
+            $brandLogo.Stretch = [Windows.Media.Stretch]::Uniform
+            [void]$navLogoPanel.Children.Add($brandLogo)
+            $sync.Form.Icon = $brandImage
+            $sync.logorender = $brandImage
+        } else {
+            # Developers can still run an ordinary local Compile.ps1 without a branding asset.
+            $fallbackLogo = [Windows.Controls.TextBlock]::new()
+            $fallbackLogo.Text = "MR"
+            $fallbackLogo.FontSize = 16
+            $fallbackLogo.FontWeight = [Windows.FontWeights]::Bold
+            $fallbackLogo.Foreground = [Windows.Media.Brushes]::DeepSkyBlue
+            [void]$navLogoPanel.Children.Add($fallbackLogo)
+        }
     }
 
     $sync["Form"].Add_Activated({

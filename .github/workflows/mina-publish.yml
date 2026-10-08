@@ -12,6 +12,7 @@ on:
       - 'xaml/**'
       - 'tools/autounattend.xml'
       - 'Compile.ps1'
+      - 'tools/mina-brand/**'
       - 'LICENSE'
       - '.github/workflows/mina-publish.yml'
   workflow_dispatch:
@@ -26,10 +27,20 @@ jobs:
       - name: Check out Mina WinUtil sources
         uses: actions/checkout@v4
 
+      - name: Render supplied Mina SVG to a WPF-compatible PNG
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          npm install --prefix tools/mina-brand --no-save --no-audit --no-fund sharp@0.34.4
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to install SVG conversion dependency.' }
+          node tools/mina-brand/render.cjs
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to render Mina SVG asset.' }
+
       - name: Compile and validate PowerShell syntax
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $env:MINA_BRANDING_REQUIRED = 'true'
           ./Compile.ps1
           $tokens = $null
           $parseErrors = $null
@@ -38,6 +49,12 @@ jobs:
             $parseErrors | ForEach-Object { Write-Error $_.Message }
             throw 'Compiled WinUtil contains PowerShell syntax errors.'
           }
+
+      - name: Verify Mina WPF branding on Windows PowerShell 5.1
+        shell: pwsh
+        run: |
+          powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File tools/mina-brand/test-brand.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Branding WPF smoke test failed.' }
 
       - name: Package compiled script with MIT license
         shell: pwsh

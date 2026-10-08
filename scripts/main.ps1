@@ -1,24 +1,20 @@
-Write-Host @"
-    CCCCCCCCCCCCCTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
- CCC::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T
-CC:::::::::::::::CT:::::::::::::::::::::TT:::::::::::::::::::::T
-C:::::CCCCCCCC::::CT:::::TT:::::::TT:::::TT:::::TT:::::::TT:::::T
-C:::::C       CCCCCCTTTTTT  T:::::T  TTTTTTTTTTTT  T:::::T  TTTTTT
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C                     T:::::T                T:::::T
-C:::::C       CCCCCC        T:::::T                T:::::T
-C:::::CCCCCCCC::::C      TT:::::::TT            TT:::::::TT
-CC:::::::::::::::C       T:::::::::T            T:::::::::T
-CCC::::::::::::C         T:::::::::T            T:::::::::T
-  CCCCCCCCCCCCC          TTTTTTTTTTT            TTTTTTTTTTT
-
-====Chris Titus Tech=====
-=====Windows Toolbox=====
-"@
+# Mina WinUtil - developer information shown when starting the console.
+$minaDeveloperDetails = @(
+    @{ Label = "Developer"; Value = "Mina Romany" }
+    @{ Label = "Mobile"; Value = "01115842589" }
+    @{ Label = "Email"; Value = "minaromanyofficial@gmail.com" }
+    @{ Label = "Website"; Value = "https://minaromany.online" }
+)
+$minaRule = "+" + ("-" * 14) + "+" + ("-" * 40) + "+"
+Write-Host ""
+Write-Host $minaRule -ForegroundColor Cyan
+Write-Host ("| {0,-12} | {1,-38} |" -f "Mina WinUtil", "Developer Information") -ForegroundColor Cyan
+Write-Host $minaRule -ForegroundColor Cyan
+foreach ($minaDetail in $minaDeveloperDetails) {
+    Write-Host ("| {0,-12} | {1,-38} |" -f $minaDetail.Label, $minaDetail.Value)
+}
+Write-Host $minaRule -ForegroundColor Cyan
+Write-Host ""
 
 # Load the configuration files
 
