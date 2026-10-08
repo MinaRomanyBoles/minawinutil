@@ -44,7 +44,7 @@ $script += "`$WinUtilAutounattendXml = @'`r`n$autounattendXml`r`n'@"
 $minaProfilePath = Join-Path $PSScriptRoot "tools/mina-brand/mina-profile.png"
 if (Test-Path -LiteralPath $minaProfilePath) {
     $minaBase64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($minaProfilePath))
-    $script += "`$sync.MinaBrandPngBase64 = '$minaBase64'`r`n"
+    $script += "`$sync.preferences.MinaBrandPngBase64 = '$minaBase64'`r`n"
 } elseif ($env:MINA_BRANDING_REQUIRED -eq 'true') {
     throw "Mina profile PNG is required for published builds; run tools/mina-brand/render.cjs first."
 }
